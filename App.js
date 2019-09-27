@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { Animated, Button, Easing, StatusBar, StyleSheet, View } from "react-native";
+import { Animated, Button, Easing, Picker, StatusBar, StyleSheet, View } from "react-native";
 import sensors, { setUpdateIntervalForType } from "react-native-sensors";
 import { interval, Subject } from "rxjs";
 import { filter, map, take } from "rxjs/operators";
@@ -22,13 +22,10 @@ export const DiceSideOptions = {
 export default class App extends Component {
   constructor() {
     super();
-    /*const sides = DiceSideOptions.fourSides;
-    var info = this.getSidesInfo(sides);
     this.state = {
-      dice1: this.randomDiceNumber(info.maxRoll),
-      dice2: this.randomDiceNumber(info.maxRoll),
-      sides: sides,
-    };*/
+      sides: DiceSideOptions.fourSides,
+      dice: [],
+    };
 
     setUpdateIntervalForType('accelerometer', 100);
     sensors.accelerometer
@@ -41,17 +38,12 @@ export default class App extends Component {
       });
   }
 
+  componentDidMount() {
+    this.updateDiceSideOption(DiceSideOptions.fourSides);
+  }
+
   spinValue = new Animated.Value(0);
   generateNewValues = new Subject();
-
-  /*updateDiceSideOption = sides => {
-    var info = this.getSidesInfo(sides);
-    this.setState({
-      sides: sides,
-      dice1: this.randomDiceNumber(info.maxRoll),
-      dice2: this.randomDiceNumber(info.maxRoll),
-    });
-  };*/
 
   spin = () => {
     this.spinValue.setValue(0);
@@ -68,46 +60,41 @@ export default class App extends Component {
       });
   };
 
-  /*getSidesInfo(sides) {
-    let style = styles.fourSidedDice;
-    let textStyle = styles.diceTextFourSidedDice;
-    let maxRoll = 4;
-    if (sides === DiceSideOptions.sixSides) {
-      style = styles.sixSidedDice;
-      textStyle = styles.diceTextSixSidedDice;
-      maxRoll = 6;
-    }
-    return {
-      style: style,
-      textStyle: textStyle,
-      maxRoll: maxRoll,
-    };
-  }
+  updateDiceSideOption = sides => {
+    const dice =
+      sides === DiceSideOptions.fourSides
+        ? [
+            <FourSidedDice
+              key="1"
+              spinValue={this.spinValue}
+              generateNewValues={this.generateNewValues}
+            />,
+            <FourSidedDice
+              key="2"
+              spinValue={this.spinValue}
+              generateNewValues={this.generateNewValues}
+            />,
+          ]
+        : [
+            <SixSidedDice
+              key="1"
+              spinValue={this.spinValue}
+              generateNewValues={this.generateNewValues}
+            />,
+            <SixSidedDice
+              key="2"
+              spinValue={this.spinValue}
+              generateNewValues={this.generateNewValues}
+            />,
+          ];
 
-  randomDiceNumber(maxRoll) {
-    const min = 1;
-    const max = maxRoll;
-    const random = Math.random() * (+max - +min) + +min;
-    return random.toFixed(0);
-  }*/
+    this.setState({
+      sides: sides,
+      dice: dice,
+    });
+  };
 
   render() {
-    /*const rotateDataDice1 = this.spinValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '360deg'],
-    });
-    const spinDataDice1 = this.spinValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '360deg'],
-    });
-    const rotateDataDice2 = this.spinValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['360deg', '0deg'],
-    });
-    const spinDataDice2 = this.spinValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['360deg', '0deg'],
-    });*/
     return (
       <Fragment>
         <StatusBar barStyle="dark-content" />
@@ -115,64 +102,14 @@ export default class App extends Component {
           <Button onPress={this.spin} title="SPIN" />
         </View>
         <View>
-          {/* <Picker
+          <Picker
             selectedValue={this.state.sides}
             onValueChange={this.updateDiceSideOption}>
             <Picker.Item label="Four Sided" value="1" />
             <Picker.Item label="Six Sided" value="2" />
-          </Picker> */}
-          {/* <Text style={styles.text}>{this.state.user}</Text> */}
+          </Picker>
         </View>
-        <View style={styles.diceContainer}>
-          <FourSidedDice
-            spinValue={this.spinValue}
-            generateNewValues={this.generateNewValues}
-          />
-          <SixSidedDice
-            spinValue={this.spinValue}
-            generateNewValues={this.generateNewValues}
-          />
-          <SixSidedDice
-            spinValue={this.spinValue}
-            generateNewValues={this.generateNewValues}
-          />
-
-          {/* <Animated.View
-            style={[
-              styles.dice,
-              this.getSidesInfo(this.state.sides).style,
-              {
-                transform: [
-                  {rotate: rotateDataDice1},
-                  {rotateY: spinDataDice1},
-                ],
-              },
-            ]}>
-            <Text
-              style={[
-                styles.diceText,
-                this.getSidesInfo(this.state.sides).textStyle,
-              ]}>
-              {this.state.dice1}
-            </Text>
-          </Animated.View> */}
-          {/* <Animated.View
-            style={[
-              styles.dice,
-              styles.sixSidedDice,
-              {
-                backgroundColor: 'coral',
-                transform: [
-                  {rotate: rotateDataDice2},
-                  {rotateY: spinDataDice2},
-                ],
-              },
-            ]}>
-            <Text style={[styles.diceText, styles.diceTextSixSidedDice]}>
-              {this.state.dice2}
-            </Text>
-          </Animated.View> */}
-        </View>
+        <View style={styles.diceContainer}>{this.state.dice}</View>
       </Fragment>
     );
   }
