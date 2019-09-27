@@ -5,6 +5,7 @@ import { interval, Subject } from "rxjs";
 import { filter, map, take } from "rxjs/operators";
 
 import FourSidedDice from "./four-sided-dice";
+import SixSidedDice from "./six-sided-dice";
 
 /**
  * Sample React Native App
@@ -127,11 +128,11 @@ export default class App extends Component {
             spinValue={this.spinValue}
             generateNewValues={this.generateNewValues}
           />
-          <FourSidedDice
+          <SixSidedDice
             spinValue={this.spinValue}
             generateNewValues={this.generateNewValues}
           />
-          <FourSidedDice
+          <SixSidedDice
             spinValue={this.spinValue}
             generateNewValues={this.generateNewValues}
           />
@@ -178,48 +179,10 @@ export default class App extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: 500,
-  },
   diceContainer: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  dice: {
-    width: 100,
-    height: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  sixSidedDice: {
-    borderRadius: 4,
-    borderWidth: 1.5,
-    borderColor: 'darkblue',
-    backgroundColor: 'skyblue',
-  },
-  fourSidedDice: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 50,
-    borderRightWidth: 50,
-    borderBottomWidth: 100,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'red',
-    backgroundColor: 'white',
-  },
-  diceText: {
-    fontSize: 40,
-    color: 'white',
-  },
-  diceTextSixSidedDice: {},
-  diceTextFourSidedDice: {
-    top: 35,
-    position: 'absolute',
   },
 });

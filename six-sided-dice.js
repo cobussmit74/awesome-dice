@@ -2,13 +2,13 @@ import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 
-export default class FourSidedDice extends Component {
+export default class SixSidedDice extends Component {
   static propTypes = {
     spinValue: PropTypes.any,
     generateNewValues: PropTypes.any,
   };
 
-  maxValue = 4;
+  maxValue = 6;
   spinValue = new Animated.Value(0);
   generateNewValues = null;
   newValueSubscription = null;
@@ -59,12 +59,12 @@ export default class FourSidedDice extends Component {
         <Animated.View
           style={[
             styles.dice,
-            styles.fourSidedDice,
+            styles.sixSidedDice,
             {
               transform: [{rotate: rotateDataDice1}, {rotateY: spinDataDice1}],
             },
           ]}>
-          <Text style={[styles.diceText, styles.diceTextFourSidedDice]}>
+          <Text style={[styles.diceText, styles.diceTextSixSidedDice]}>
             {this.state.diceValue}
           </Text>
         </Animated.View>
@@ -87,25 +87,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 10,
   },
-  fourSidedDice: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 50,
-    borderRightWidth: 50,
-    borderBottomWidth: 100,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'red',
-    backgroundColor: 'white',
+  sixSidedDice: {
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: 'darkblue',
+    backgroundColor: 'skyblue',
   },
   diceText: {
     fontSize: 40,
     color: 'white',
   },
-  diceTextFourSidedDice: {
-    top: 35,
-    position: 'absolute',
-  },
+  diceTextSixSidedDice: {},
 });
