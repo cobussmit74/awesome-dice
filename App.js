@@ -14,16 +14,22 @@ import SixSidedDice from "./six-sided-dice";
  * @format
  * @flow
  */
-export const DiceSideOptions = {
+export const DiceShapes = {
   fourSides: '1',
   sixSides: '2',
+};
+export const DiceCount = {
+  one: '1',
+  two: '2',
+  four: '4',
 };
 
 export default class App extends Component {
   constructor() {
     super();
     this.state = {
-      sides: DiceSideOptions.fourSides,
+      sides: DiceShapes.fourSides,
+      count: DiceCount.two,
       dice: [],
     };
 
@@ -39,7 +45,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.updateDiceSideOption(DiceSideOptions.fourSides);
+    this.updateDiceShape(DiceShapes.fourSides);
   }
 
   spinValue = new Animated.Value(0);
@@ -60,36 +66,48 @@ export default class App extends Component {
       });
   };
 
-  updateDiceSideOption = sides => {
-    const dice =
-      sides === DiceSideOptions.fourSides
-        ? [
-            <FourSidedDice
-              key="1"
-              spinValue={this.spinValue}
-              generateNewValues={this.generateNewValues}
-            />,
-            <FourSidedDice
-              key="2"
-              spinValue={this.spinValue}
-              generateNewValues={this.generateNewValues}
-            />,
-          ]
-        : [
-            <SixSidedDice
-              key="1"
-              spinValue={this.spinValue}
-              generateNewValues={this.generateNewValues}
-            />,
-            <SixSidedDice
-              key="2"
-              spinValue={this.spinValue}
-              generateNewValues={this.generateNewValues}
-            />,
-          ];
-
+  updateDiceShape = sides => {
     this.setState({
       sides: sides,
+    });
+
+    this.updateDice(sides, this.state.count);
+  };
+
+  updateDiceCount = count => {
+    this.setState({
+      count: count,
+    });
+
+    this.updateDice(this.state.sides, count);
+  };
+
+  updateDice = (sides, count) => {
+    const dice = [];
+
+    for (let x = 1; x <= count; x++) {
+      if (sides === DiceShapes.fourSides) {
+        const newDice = (
+          <FourSidedDice
+            key={x}
+            spinValue={this.spinValue}
+            generateNewValues={this.generateNewValues}
+          />
+        );
+        dice.push(newDice);
+      } else if (sides === DiceShapes.sixSides) {
+        const newDice = (
+          <SixSidedDice
+            key={x}
+            spinValue={this.spinValue}
+            generateNewValues={this.generateNewValues}
+          />
+        );
+        dice.push(newDice);
+      }
+    }
+
+    this.setState({
       dice: dice,
     });
   };
@@ -104,9 +122,16 @@ export default class App extends Component {
         <View>
           <Picker
             selectedValue={this.state.sides}
-            onValueChange={this.updateDiceSideOption}>
-            <Picker.Item label="Four Sided" value="1" />
-            <Picker.Item label="Six Sided" value="2" />
+            onValueChange={this.updateDiceShape}>
+            <Picker.Item label="Four Sided" value={DiceShapes.fourSides} />
+            <Picker.Item label="Six Sided" value={DiceShapes.sixSides} />
+          </Picker>
+          <Picker
+            selectedValue={this.state.count}
+            onValueChange={this.updateDiceCount}>
+            <Picker.Item label="One" value={DiceCount.one} />
+            <Picker.Item label="Two" value={DiceCount.two} />
+            <Picker.Item label="Four" value={DiceCount.four} />
           </Picker>
         </View>
         <View style={styles.diceContainer}>{this.state.dice}</View>
