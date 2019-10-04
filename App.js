@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
-import { Animated, Button, Easing, Picker, StatusBar, StyleSheet, View } from "react-native";
+import { Button, Picker, StatusBar, StyleSheet, View } from "react-native";
 import sensors, { setUpdateIntervalForType } from "react-native-sensors";
-import { interval, Subject } from "rxjs";
-import { filter, map, take } from "rxjs/operators";
+import { Subject } from "rxjs";
+import { filter, map } from "rxjs/operators";
 
 import FourSidedDice from "./four-sided-dice";
 import SixSidedDice from "./six-sided-dice";
@@ -37,7 +37,7 @@ export default class App extends Component {
     sensors.accelerometer
       .pipe(
         map(({x, y, z}) => x + y + z),
-        filter(speed => speed > 15),
+        filter(speed => speed > 50),
       )
       .subscribe(s => {
         this.spin();
@@ -48,22 +48,10 @@ export default class App extends Component {
     this.updateDiceShape(DiceShapes.fourSides);
   }
 
-  spinValue = new Animated.Value(0);
   generateNewValues = new Subject();
 
   spin = () => {
-    this.spinValue.setValue(0);
-    Animated.timing(this.spinValue, {
-      toValue: 1,
-      duration: 500,
-      easing: Easing.linear,
-    }).start();
-
-    interval(100)
-      .pipe(take(5))
-      .subscribe(_ => {
-        this.generateNewValues.next();
-      });
+    this.generateNewValues.next();
   };
 
   updateDiceShape = sides => {
@@ -88,20 +76,12 @@ export default class App extends Component {
     for (let x = 1; x <= count; x++) {
       if (sides === DiceShapes.fourSides) {
         const newDice = (
-          <FourSidedDice
-            key={x}
-            spinValue={this.spinValue}
-            generateNewValues={this.generateNewValues}
-          />
+          <FourSidedDice key={x} generateNewValues={this.generateNewValues} />
         );
         dice.push(newDice);
       } else if (sides === DiceShapes.sixSides) {
         const newDice = (
-          <SixSidedDice
-            key={x}
-            spinValue={this.spinValue}
-            generateNewValues={this.generateNewValues}
-          />
+          <SixSidedDice key={x} generateNewValues={this.generateNewValues} />
         );
         dice.push(newDice);
       }

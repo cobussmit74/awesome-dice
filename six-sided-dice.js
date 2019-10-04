@@ -1,10 +1,11 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { interval } from "rxjs";
+import { take } from "rxjs/operators";
 
 export default class SixSidedDice extends Component {
   static propTypes = {
-    spinValue: PropTypes.any,
     generateNewValues: PropTypes.any,
   };
 
@@ -15,7 +16,6 @@ export default class SixSidedDice extends Component {
 
   constructor(props) {
     super(props);
-    this.spinValue = props.spinValue;
     this.generateNewValues = props.generateNewValues;
 
     this.state = {
@@ -26,9 +26,21 @@ export default class SixSidedDice extends Component {
   componentDidMount() {
     this.newValueSubscription = this.generateNewValues.subscribe({
       next: _ => {
-        this.setState({
-          diceValue: this.randomDiceNumber(this.maxValue),
-        });
+        const spinRandom = this.randomNumber(2, 10);
+        this.spinValue.setValue(0);
+        Animated.timing(this.spinValue, {
+          toValue: 1,
+          duration: spinRandom * 100,
+          easing: Easing.linear,
+        }).start();
+
+        interval(100)
+          .pipe(take(spinRandom))
+          .subscribe(_ => {
+            this.setState({
+              diceValue: this.randomDiceNumber(this.maxValue),
+            });
+          });
       },
     });
   }
@@ -38,8 +50,10 @@ export default class SixSidedDice extends Component {
   }
 
   randomDiceNumber(maxRoll) {
-    const min = 1;
-    const max = maxRoll;
+    return this.randomNumber(1, maxRoll);
+  }
+
+  randomNumber(min, max) {
     const random = Math.random() * (+max - +min) + +min;
     return random.toFixed(0);
   }
